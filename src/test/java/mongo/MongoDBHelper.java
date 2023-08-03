@@ -82,7 +82,7 @@ public class MongoDBHelper<T> {
         }
     }
 
-    public MongoDBHelper(String collectionName, Class<T> clazz) {
+    private MongoDBHelper(String collectionName, Class<T> clazz) {
         //connectToSSHServer(); if SSH connection is required
         this.collectionName = collectionName;
         this.clazz = clazz;
