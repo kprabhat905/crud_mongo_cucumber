@@ -2,8 +2,6 @@ package cucumber;
 
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
-import mongo.CommonInstance;
-import org.junit.AfterClass;
 import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)

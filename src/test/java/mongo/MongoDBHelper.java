@@ -31,6 +31,7 @@ public class MongoDBHelper<T> {
     private static final int sshPort = 22;
     private static final String privateKeyPath = ""; // Update with your private key path
     private final String authSource = "";
+    private final String authMechanism = "";
     private final String dbName = "";
     private static final String dbUser = "";
     private static final String dbPassword = "";
@@ -45,6 +46,17 @@ public class MongoDBHelper<T> {
     private final Class<T> clazz;
     private MongoCollection<Document> collection;
     private final MongoClient mongoClient;
+
+    // Private static instance variable
+    private static MongoDBHelper<?> instance;
+
+    // Public static method to get the singleton instance
+    public static synchronized <T> MongoDBHelper<T> getInstance(String collectionName, Class<T> clazz) {
+        if (instance == null) {
+            instance = new MongoDBHelper<>(collectionName, clazz);
+        }
+        return (MongoDBHelper<T>) instance;
+    }
 
     private static void connectToSSHServer() {
         try {
@@ -69,13 +81,14 @@ public class MongoDBHelper<T> {
             e.printStackTrace();
         }
     }
+
     public MongoDBHelper(String collectionName, Class<T> clazz) {
         //connectToSSHServer(); if SSH connection is required
         this.collectionName = collectionName;
         this.clazz = clazz;
 
         try {
-            String connectionStringServer = "mongodb://" + dbUser + ":" + dbPassword + "@" + "localhost" + ":" + sshSession.setPortForwardingL(dbPort, dbHost, dbPort) + "/" + dbName + "?authMechanism=SCRAM-SHA-256&authSource=" + authSource;
+            String connectionStringServer = "mongodb://" + dbUser + ":" + dbPassword + "@" + "localhost" + ":" + sshSession.setPortForwardingL(dbPort, dbHost, dbPort) + "/" + dbName + "?authMechanism="+authMechanism+"&authSource=" + authSource;
 
         } catch (JSchException e) {
             throw new RuntimeException(e);

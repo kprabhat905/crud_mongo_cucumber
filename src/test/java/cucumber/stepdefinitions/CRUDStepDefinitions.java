@@ -1,17 +1,13 @@
 package cucumber.stepdefinitions;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.cucumber.java.en.*;
 import model.User;
-import mongo.CommonInstance;
 import mongo.MongoDBHelper;
 import org.bson.types.ObjectId;
-import org.junit.After;
 
 import static org.junit.Assert.*;
 
 public class CRUDStepDefinitions {
-    private static MongoDBHelper<User> mongoDBHelper;
     private static User user;
     private static String userId;
     private static User insertedUser;
@@ -24,7 +20,7 @@ public class CRUDStepDefinitions {
 
     @When("I insert the User document")
     public void i_insert_the_user_document() {
-        mongoDBHelper = CommonInstance.getMongoDBHelper("users", User.class);
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
         String generatedId = mongoDBHelper.insertDocument(user);
         user.setId(new ObjectId(generatedId)); // Convert string to ObjectId and set
         insertedUser = user;
@@ -38,6 +34,7 @@ public class CRUDStepDefinitions {
 
     @When("I retrieve the User document by ID")
     public void iRetrieveTheUserDocumentByID() {
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
         // Retrieve the User document using the updated MongoDBHelper
         retrievedUser = mongoDBHelper.getDocumentById(userId);
     }
@@ -53,11 +50,13 @@ public class CRUDStepDefinitions {
     public void iUpdateTheUserDocumentWithNameAndAge(String name, String age) {
         user.setName(name);
         user.setAge(Integer.parseInt(age));
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
         mongoDBHelper.updateDocument(user.getId().toString(), user);
     }
 
     @Then("the updated User document should have name {string} and age {string}")
     public void theUpdatedUserDocumentShouldHaveNameAndAge(String name, String age) {
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
         user = mongoDBHelper.getDocumentById(userId);
         assertNotNull(user);
         assertEquals(name, user.getName());
@@ -66,11 +65,13 @@ public class CRUDStepDefinitions {
 
     @When("I delete the User document")
     public void iDeleteTheUserDocument() {
-        mongoDBHelper.deleteDocument(user.getId().toString());
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
+        mongoDBHelper.deleteDocument(user.getId());
     }
 
     @Then("the User document is successfully deleted")
     public void theUserDocumentIsSuccessfullyDeleted() {
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
         user = mongoDBHelper.getDocumentById(userId);
         assertNull(user);
         //CommonInstance.closeMongoDBHelper(mongoDBHelper);
@@ -79,6 +80,7 @@ public class CRUDStepDefinitions {
     @Given("I have a User with ID {string}")
     public void i_have_a_User_with_ID(String userId) {
         this.userId = userId;
+        MongoDBHelper<User> mongoDBHelper = MongoDBHelper.getInstance("users", User.class);
         user = mongoDBHelper.getDocumentById(userId);
         assertNotNull(user);
     }
