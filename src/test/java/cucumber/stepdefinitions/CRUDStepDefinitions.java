@@ -3,8 +3,10 @@ package cucumber.stepdefinitions;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.cucumber.java.en.*;
 import model.User;
+import mongo.CommonInstance;
 import mongo.MongoDBHelper;
 import org.bson.types.ObjectId;
+import org.junit.After;
 
 import static org.junit.Assert.*;
 
@@ -22,7 +24,7 @@ public class CRUDStepDefinitions {
 
     @When("I insert the User document")
     public void i_insert_the_user_document() {
-        mongoDBHelper = new MongoDBHelper<>("users", User.class);
+        mongoDBHelper = CommonInstance.getMongoDBHelper("users", User.class);
         String generatedId = mongoDBHelper.insertDocument(user);
         user.setId(new ObjectId(generatedId)); // Convert string to ObjectId and set
         insertedUser = user;
@@ -36,11 +38,8 @@ public class CRUDStepDefinitions {
 
     @When("I retrieve the User document by ID")
     public void iRetrieveTheUserDocumentByID() {
-        // Create a new instance of MongoDBHelper for User
-        MongoDBHelper<User> userMongoDBHelper = new MongoDBHelper<>("users", User.class);
-
         // Retrieve the User document using the updated MongoDBHelper
-        retrievedUser = userMongoDBHelper.getDocumentById(userId);
+        retrievedUser = mongoDBHelper.getDocumentById(userId);
     }
 
     @Then("the retrieved User document should have name {string} and age {string}")
@@ -74,13 +73,14 @@ public class CRUDStepDefinitions {
     public void theUserDocumentIsSuccessfullyDeleted() {
         user = mongoDBHelper.getDocumentById(userId);
         assertNull(user);
+        //CommonInstance.closeMongoDBHelper(mongoDBHelper);
     }
 
     @Given("I have a User with ID {string}")
     public void i_have_a_User_with_ID(String userId) {
-        mongoDBHelper = new MongoDBHelper<>("users", User.class);
         this.userId = userId;
         user = mongoDBHelper.getDocumentById(userId);
         assertNotNull(user);
     }
+
 }
