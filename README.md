@@ -26,6 +26,16 @@ To set up MongoDB locally on a Mac and create a database, follow these steps:
 
 That's it! You have now set up MongoDB locally on your Mac and created a database. You can start inserting data and working with collections within this database. Remember to secure your database properly if you plan to use it in a production environment.
 
+
+
+# SINGLETON PATTERN
+
+To create a singleton pattern for the MongoDBHelper class, you can follow these steps:
+
+Add a private static instance variable of the MongoDBHelper class.
+Create a private constructor to prevent external instantiation of the class.
+Add a public static method that returns the singleton instance. This method should check if the instance is already created and return it, or create a new instance if it doesn't exist.
+
 To stop the MongoDB service, you can use the following command:
 - brew services stop mongodb/brew/mongodb-community
 
